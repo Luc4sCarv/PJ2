@@ -43,18 +43,23 @@ POSTGRES_DB_PASSWORD=sua_senha_postgres
 uv sync
 ```
 
-4. Rode as migrações.
+4. Rode as migrações para criar as tabelas no banco.
 
 ```powershell
 uv run python manage.py migrate --database=default --fake-initial
 uv run python manage.py migrate --database=biblioteca --fake-initial
 ```
 
-5. Inicie o servidor do backend.
+5. Suba a API (servidor backend).
 
 ```powershell
 uv run python manage.py runserver 127.0.0.1:8000
 ```
+
+> Resumo rápido (backend):
+>
+> 1. Criar tabelas: `uv run python manage.py migrate --database=default --fake-initial` e `uv run python manage.py migrate --database=biblioteca --fake-initial`
+> 2. Subir API: `uv run python manage.py runserver 127.0.0.1:8000`
 
 ## 3) Configurar o frontend
 1. Abra **outro PowerShell**.
