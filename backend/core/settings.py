@@ -10,17 +10,37 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def _load_env_file(path: Path) -> None:
+    if not path.exists():
+        return
+
+    for line in path.read_text(encoding='utf-8').splitlines():
+        line = line.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+
+        key, value = line.split('=', 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+_load_env_file(BASE_DIR / '.env')
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/f
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(=l(h_jqg5)mr-hid4l9=tol^i^63p5*ty)!ns9xrhvu2o9o_v'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-(=l(h_jqg5)mr-hid4l9=tol^i^63p5*ty)!ns9xrhvu2o9o_v')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -82,19 +102,19 @@ DATABASE_ROUTERS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "db_escola",
-        'HOST': "localhost",
-        'PORT': 3306,
-        'USER': "root",
-        'PASSWORD': "030407",
+        'NAME': os.environ.get('MYSQL_DB_NAME', 'db_escola'),
+        'HOST': os.environ.get('MYSQL_DB_HOST', 'localhost'),
+        'PORT': int(os.environ.get('MYSQL_DB_PORT', '3306')),
+        'USER': os.environ.get('MYSQL_DB_USER', 'root'),
+        'PASSWORD': os.environ.get('MYSQL_DB_PASSWORD', ''),
     },
     'biblioteca': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "db_biblioteca",
-        'HOST': "localhost",
-        'PORT': 5432,
-        'USER': "postgres",
-        'PASSWORD': "030407",
+        'NAME': os.environ.get('POSTGRES_DB_NAME', 'db_biblioteca'),
+        'HOST': os.environ.get('POSTGRES_DB_HOST', 'localhost'),
+        'PORT': int(os.environ.get('POSTGRES_DB_PORT', '5432')),
+        'USER': os.environ.get('POSTGRES_DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_DB_PASSWORD', ''),
     },
 }
 
